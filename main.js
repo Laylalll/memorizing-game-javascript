@@ -5,6 +5,66 @@ const Symbols = [
   'https://assets-lighthouse.alphacamp.co/uploads/image/file/17991/diamonds.png', // 方塊
   'https://assets-lighthouse.alphacamp.co/uploads/image/file/17988/__.png' // 梅花
 ]
+const GAME_STATE = {
+  FirstCardAwaits: 'FirstCardAwaits',
+  SecondCardAwaits: 'SecondCardAwaits',
+  CardsMatchFailed: 'CardsMatchFailed',
+  CardsMatched: 'CardsMatched',
+  GameFinished: 'GameFinished'
+}
+
+const model = {
+  revealedCards: [],
+  isRevealedCardsMatched() {
+    return model.revealedCards[0].dataset.index % 13 === model.revealedCards[1].dataset.index % 13
+  }
+}
+
+const controller = {
+  currentStatus: GAME_STATE.FirstCardAwaits,
+  generateCards() { //遊戲呼叫初始化
+    view.displayCards(utility.getRandomNumberArray(52))
+  },
+  dispatchCardAction(card) {
+    if (!card.classList.contains('back')) {
+      return
+    }
+    switch (this.currentStatus) {
+      case GAME_STATE.FirstCardAwaits:
+        view.flipCard(card)
+        model.revealedCards.push(card)
+        this.currentStatus = GAME_STATE.SecondCardAwaits
+        break
+      case GAME_STATE.SecondCardAwaits:
+        view.flipCard(card)
+        model.revealedCards.push(card)
+        console.log('revealedCards:', model.revealedCards.map(card => card.dataset.index))
+        console.log('currentStatus:', this.currentStatus)
+
+        // 判斷兩張數字是否相同
+        if (model.isRevealedCardsMatched()) { // 兩張牌數字相同
+          this.currentStatus = GAME_STATE.CardsMatched // 進入 matched 狀態
+          console.log('配對成功')
+          model.revealedCards[0].classList.add('paired') // 維持翻開、卡片底色改變
+          model.revealedCards[1].classList.add('paired') // 維持翻開、卡片底色改變
+          model.revealedCards = []// 清空revealedCards
+          this.currentStatus = GAME_STATE.FirstCardAwaits // 回到 firstCardAwaits 狀態
+          return
+        } else {
+          console.log('配對失敗') // 兩張牌數字不同
+          this.currentStatus = GAME_STATE.CardsMatchFailed // 進入 unmatched 狀態
+          setTimeout(() => { // 延遲1秒動畫
+            view.flipCard(model.revealedCards[0])// 翻回背面 
+            view.flipCard(model.revealedCards[1])// 翻回背面 
+            model.revealedCards = []// 清空revealedCards
+          }, 1000)
+          this.currentStatus = GAME_STATE.FirstCardAwaits // 回到 firstCardAwaits 狀態
+        }
+        break
+    }
+  }
+}
+
 
 view = {
   displayCards(indexes) {
@@ -30,7 +90,7 @@ view = {
     return rawHtml
   },
 
-  getCardElement(index) { //取得牌背面元素 & index
+  getCardElement(index) { //取得牌背面元素 & card index
     return `<div class="card back" data-index=${index}></div>`
   },
 
@@ -75,10 +135,10 @@ const utility = {
 
 
 // EXECUTING /////////////////////////////////////////
-view.displayCards(utility.getRandomNumberArray(52))
+controller.generateCards()
 
 document.querySelectorAll('.card').forEach(
   card => card.addEventListener('click', function (event) {
-    view.flipCard(card)
+    controller.dispatchCardAction(card)
   })
 )
