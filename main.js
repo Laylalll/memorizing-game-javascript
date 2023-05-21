@@ -7,9 +7,9 @@ const Symbols = [
 ]
 
 view = {
-  displayCards() {
+  displayCards(indexes) {
     const cardsTable = document.querySelector('#cards')
-    const cards = Array.from(Array(52).keys())
+    const cards = indexes
     const rawHtml = cards.map(index => this.getCardElement(index)).join('')
     cardsTable.innerHTML = rawHtml
   },
@@ -48,7 +48,17 @@ view = {
   }
 }
 
+const utility = {
+  getRandomNumberArray(count) {
+    const array = Array.from(Array(count).keys())
+    for (let index = array.length - 1; index > 0; index--) {
+      let randomIndex = Math.floor(Math.random() * (index + 1))
+        ;[array[index], array[randomIndex]] = [array[randomIndex], array[index]]
+    }
+    return array
+  }
+}
 
 
 // EXECUTING /////////////////////////////////////////
-view.displayCards()
+view.displayCards(utility.getRandomNumberArray(52))
