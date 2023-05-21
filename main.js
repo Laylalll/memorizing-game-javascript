@@ -1,4 +1,4 @@
-// DATA & FUNCTION
+// DATA & FUNCTION /////////////////////////////////////////
 const Symbols = [
   'https://assets-lighthouse.alphacamp.co/uploads/image/file/17989/__.png', // 黑桃
   'https://assets-lighthouse.alphacamp.co/uploads/image/file/17992/heart.png', // 愛心
@@ -9,7 +9,9 @@ const Symbols = [
 view = {
   displayCards() {
     const cardsTable = document.querySelector('#cards')
-    cardsTable.innerHTML = this.getCardElement(10)
+    const cards = Array.from(Array(52).keys())
+    const rawHtml = cards.map(index => this.getCardElement(index)).join('')
+    cardsTable.innerHTML = rawHtml
   },
 
   getCardElement(index) {
@@ -47,5 +49,6 @@ view = {
 }
 
 
-// EXECUTING
+
+// EXECUTING /////////////////////////////////////////
 view.displayCards()
