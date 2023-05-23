@@ -57,7 +57,8 @@ const controller = {
         } else {
           // 配對失敗
           this.currentStatus = GAME_STATE.CardsMatchFailed
-          // 延遲1秒動畫
+          view.appendWrongAnimation(...model.revealedCards)
+          // 延遲1秒後resetCards
           setTimeout(this.restCards, 1000)
         }
         break
@@ -144,6 +145,15 @@ view = {
 
   renderScore(score) {
     document.querySelector('.score').textContent = `Score:${score}`
+  },
+
+  appendWrongAnimation(...cards) {
+    cards.map(card => {
+      card.classList.add('wrong')
+      card.addEventListener('animationend', (event) => {
+        event.target.classList.remove('wrong')
+      }, { once: true })
+    })
   },
 
   showGameFinished() {
