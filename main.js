@@ -48,11 +48,11 @@ const controller = {
           view.renderScore(model.score += 10)
           view.pairCards(...model.revealedCards) // 維持翻開、卡片底色改變
           model.revealedCards = []
-          // if (model.score === 260) { // 判斷是否完成遊戲
-          //   this.currentStatus = GAME_STATE.GameFinished
-          //   view.showGameFinished()
-          //   return
-          // }
+          if (model.score === 260) { // 判斷是否完成遊戲
+            this.currentStatus = GAME_STATE.GameFinished
+            view.showGameFinished()
+            return
+          }
           this.currentStatus = GAME_STATE.FirstCardAwaits
         } else {
           // 配對失敗
@@ -157,7 +157,16 @@ view = {
   },
 
   showGameFinished() {
-    console.log('Game Finished')
+    // 創建元素 + 加入元素 + 插入節點
+    const div = document.createElement('div')
+    div.classList.add('completed')
+    div.innerHTML = `
+      <p>Complete</p>
+      <p>Score:${model.score}</p>
+      <p>You've tried:${model.triedTimes}times</p>
+    `
+    const header = document.querySelector('#header')
+    header.before(div)
   }
 
 }
