@@ -77,7 +77,7 @@ const controller = {
 }
 
 
-view = {
+const view = {
   displayCards(indexes) {
     const cardsTable = document.querySelector('#cards')
     const cards = indexes
